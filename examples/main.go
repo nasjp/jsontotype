@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"log"
 	"strings"
 
 	"github.com/nasjp/jsontotype"
 )
 
-const exampleJson = `{
+const (
+	exampleJson = `{
   "id": 1,
   "name": "bob",
   "age": 23,
@@ -22,23 +23,31 @@ const exampleJson = `{
     "password": "123456789"
   }
 }`
-
-const exampleJson2 = `"hoge"`
+	packageName = "user"
+	typeName    = "User"
+)
 
 func main() {
-	if err := run(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+	r := strings.NewReader(exampleJson)
+	result, err := jsontotype.Exec(r, packageName, typeName)
+	if err != nil {
+		log.Fatal(err)
 	}
-	os.Exit(0)
+	fmt.Println(result)
 }
 
-func run() error {
-	r := strings.NewReader(exampleJson)
-	str, err := jsontotype.Exec(r, "user", "User")
-	if err != nil {
-		return err
-	}
-	fmt.Println(str)
-	return nil
+/* fmt.Println(result)
+package user
+
+type User struct {
+        ID            int64    `json:"id"`
+        Name          string   `json:"name"`
+        Age           int64    `json:"age"`
+        Score         float64  `json:"score"`
+        FavoriteFoods []string `json:"favoriteFoods"`
+        Credentials   struct {
+                ID       int64  `json:"id"`
+                Password string `json:"password"`
+        } `json:"credentials"`
 }
+*/
