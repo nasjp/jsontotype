@@ -67,12 +67,7 @@ type jsonTok struct {
 	val      interface{}
 }
 
-/*
-tok = str | num | nul | bool | obj | arr
-obj = "{" str  tok ("," str  tok)* "}"
-arr = "[" tok ("," tok)* "]"
-*/
-
+// Exec return defined type based on json
 func Exec(r io.Reader, pkgName string, typeName string) (string, error) {
 	dec := json.NewDecoder(r)
 	tok, err := tokenize(dec)
@@ -95,6 +90,13 @@ func tokenize(dec *json.Decoder) (*jsonTok, error) {
 	return tok(dec)
 }
 
+/*
+tok = str | num | nul | bool | obj | arr
+obj = "{" str  tok ("," str  tok)* "}"
+arr = "[" tok ("," tok)* "]"
+*/
+
+// tok = str | num | nul | bool | obj | arr
 func tok(dec *json.Decoder) (*jsonTok, error) {
 	t, err := dec.Token()
 	if err == io.EOF {
@@ -107,12 +109,16 @@ func tok(dec *json.Decoder) (*jsonTok, error) {
 	switch v := t.(type) {
 	case string:
 		return &jsonTok{jsonType: jsonTypeStr, val: v}, nil
+
 	case float64:
 		return &jsonTok{jsonType: jsonTypeNum, val: v}, nil
+
 	case nil:
 		return &jsonTok{jsonType: jsonTypeNull, val: v}, nil
+
 	case bool:
 		return &jsonTok{jsonType: jsonTypeBool, val: v}, nil
+
 	case json.Delim:
 		switch v {
 		case '{':
@@ -161,6 +167,7 @@ func tok(dec *json.Decoder) (*jsonTok, error) {
 	return nil, nil
 }
 
+// obj = "{" str  tok ("," str  tok)* "}"
 func obj(dec *json.Decoder) (*jsonTok, error) {
 	var o []*jsonTok
 	for {
@@ -187,6 +194,7 @@ func obj(dec *json.Decoder) (*jsonTok, error) {
 	}
 }
 
+// arr = "[" tok ("," tok)* "]"
 func arr(dec *json.Decoder) (*jsonTok, error) {
 	var a []*jsonTok
 	for {
@@ -202,7 +210,6 @@ func arr(dec *json.Decoder) (*jsonTok, error) {
 }
 
 func parse(tok *jsonTok) (string, error) {
-	// var body
 	switch tok.jsonType {
 	case jsonTypeStr:
 		return "string", nil
@@ -250,7 +257,7 @@ func parse(tok *jsonTok) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return "[]" + o, nil
+		return fmt.Sprintf("[]%s", o), nil
 	}
 	return "", nil
 }

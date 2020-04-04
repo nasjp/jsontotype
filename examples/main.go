@@ -35,7 +35,6 @@ func main() {
 
 func run() error {
 	r := strings.NewReader(exampleJson)
-
 	str, err := jsontotype.Exec(r, "user", "User")
 	if err != nil {
 		return err
