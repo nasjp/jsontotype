@@ -36,11 +36,17 @@ type Hoge float64
 
 type Hoge bool
 `, false},
-		{"obj", args{r: strings.NewReader(`{"name": "bob"}`), pkgName: "hoge", typeName: "Hoge"}, "package hoge\n\ntype Hoge struct {\n	Name string `json:\"name\"`\n}\n", false},
+		{"obj", args{r: strings.NewReader(`{"given_name": "bob"}`), pkgName: "hoge", typeName: "Hoge"}, "package hoge\n\ntype Hoge struct {\n	GivenName string `json:\"given_name\"`\n}\n", false},
 		{"array", args{r: strings.NewReader(`["name"]`), pkgName: "hoge", typeName: "Hoge"}, `package hoge
 
 type Hoge []string
 `, false},
+		{"toCamelCase - snake", args{r: strings.NewReader(`{"csv_id": 1}`), pkgName: "hoge", typeName: "Hoge"}, "package hoge\n\ntype Hoge struct {\n	CSVID int64 `json:\"csv_id\"`\n}\n", false},
+		{"toCamelCase - camel", args{r: strings.NewReader(`{"csvId": 1}`), pkgName: "hoge", typeName: "Hoge"}, "package hoge\n\ntype Hoge struct {\n	CSVID int64 `json:\"csvId\"`\n}\n", false},
+		{"null", args{r: strings.NewReader(`{"status": null}`), pkgName: "hoge", typeName: "Hoge"}, "", true},
+		{"fail - invalid syntax", args{r: strings.NewReader(`{`), pkgName: "hoge", typeName: "Hoge"}, "", true},
+		{"fail - empty object", args{r: strings.NewReader(`{}`), pkgName: "hoge", typeName: "Hoge"}, "", true},
+		{"fail - empty array", args{r: strings.NewReader(`[]`), pkgName: "hoge", typeName: "Hoge"}, "", true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
