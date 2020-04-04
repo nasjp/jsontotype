@@ -6,4 +6,4 @@ JSON Object => Go defined type
 
 ## Usage
 
-Please visit [examples](examples/main.go)
+Please visit [examples](examples/example_json.go)
