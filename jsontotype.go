@@ -69,7 +69,7 @@ type jsonTok struct {
 
 /*
 tok = str | num | nul | bool | obj | arr
-obj = "{" str ":" tok ("," str ":" expr)* "}"
+obj = "{" str  tok ("," str  tok)* "}"
 arr = "[" tok ("," tok)* "]"
 */
 
@@ -161,7 +161,6 @@ func tok(dec *json.Decoder) (*jsonTok, error) {
 	return nil, nil
 }
 
-// obj = "{" str ":" tok ("," str ":" expr)* "}"
 func obj(dec *json.Decoder) (*jsonTok, error) {
 	var o []*jsonTok
 	for {
