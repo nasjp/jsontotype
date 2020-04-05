@@ -290,8 +290,8 @@ func toCamelCase(raw string) string {
 			continue
 		}
 
-		// for snake case
-		if r == '_' {
+		// for snake-case and kebab-case and so on ...
+		if r == '_' || r == '-' || r == ':' {
 			isToUpper = true
 			if upNowWord := strings.ToUpper(nowWord); initialisms[upNowWord] {
 				nowWord = upNowWord
